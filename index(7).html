@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Indian Freelancer Rate Calculator — Free Tool by Harry P.</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root {
+    --bg: #f7f5f0;
+    --surface: #ffffff;
+    --border: #e5e2da;
+    --border2: #d0ccc2;
+    --ink: #1a1814;
+    --ink2: #4a4740;
+    --muted: #9a968e;
+    --accent: #c84b2f;
+    --green: #1e7e4a;
+    --gold: #c8941e;
+    --radius: 4px;
+    --radius-lg: 8px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Geist', sans-serif;
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .page { max-width: 700px; margin: 0 auto; padding: 56px 24px 100px; }
+
+  /* Header */
+  .header { margin-bottom: 48px; border-bottom: 1px solid var(--border2); padding-bottom: 28px; }
+  .eyebrow {
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
+  }
+  .eyebrow::after { content:''; flex:1; height:1px; background:var(--border2); max-width:80px; }
+  .tool-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted);
+    border: 1px solid var(--border2); padding: 4px 12px;
+    border-radius: 100px; margin-bottom: 20px;
+  }
+  .tool-badge-dot {
+    width:6px; height:6px; border-radius:50%; background:var(--green);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(30px, 6vw, 50px); font-weight: 400;
+    line-height: 1.1; color: var(--ink); margin-bottom: 14px; letter-spacing: -0.5px;
+  }
+  h1 em { font-style: italic; color: var(--accent); }
+  .tagline { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .dot { color: var(--border2); }
+  .rate-live {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(30,126,74,0.08); border: 1px solid rgba(30,126,74,0.25);
+    color: var(--green); font-family: 'DM Mono', monospace;
+    font-size: 11px; padding: 4px 12px; border-radius: 100px; margin-top: 12px;
+  }
+  .rate-live-dot { width:6px; height:6px; border-radius:50%; background:var(--green); animation: pulse 2s infinite; }
+
+  /* Section */
+  .section { margin-bottom: 28px; }
+  .section-label {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted);
+    margin-bottom: 14px; display: flex; align-items: center; gap: 12px;
+  }
+  .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  /* Form */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media(max-width:520px){ .form-grid{ grid-template-columns:1fr; } }
+  .field { display:flex; flex-direction:column; gap:6px; }
+  .field.full { grid-column: 1 / -1; }
+  label { font-size: 12px; font-weight: 500; color: var(--ink2); letter-spacing: 0.3px; }
+  select {
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: var(--radius); color: var(--ink);
+    font-family: 'Geist', sans-serif; font-size: 14px;
+    padding: 10px 32px 10px 12px; width: 100%;
+    appearance: none; -webkit-appearance: none; cursor: pointer; outline: none;
+    transition: border-color 0.15s;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a968e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center;
+  }
+  select:hover { border-color: var(--ink2); }
+  select:focus { border-color: var(--accent); outline: 2px solid rgba(200,75,47,0.1); }
+  select option { background:#fff; color:var(--ink); }
+
+  /* Range */
+  .range-wrap { display:flex; flex-direction:column; gap:10px; }
+  .range-top { display:flex; justify-content:space-between; align-items:center; }
+  .range-val {
+    font-family:'DM Mono',monospace; font-size:13px; font-weight:500;
+    color:var(--accent); background:rgba(200,75,47,0.08);
+    padding:3px 12px; border-radius:100px; border:1px solid rgba(200,75,47,0.2);
+    min-width:70px; text-align:center;
+  }
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 6px;
+    background: var(--border2); border-radius: 100px;
+    outline: none; cursor: pointer; border: none; padding: 0;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 22px; height: 22px;
+    border-radius: 50%; background: var(--accent);
+    cursor: pointer; border: 3px solid var(--bg);
+    box-shadow: 0 2px 8px rgba(200,75,47,0.4);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--accent); cursor: pointer;
+    border: 3px solid var(--bg); box-shadow: 0 2px 8px rgba(200,75,47,0.4);
+  }
+  .range-ends {
+    display:flex; justify-content:space-between;
+    font-family:'DM Mono',monospace; font-size:10px; color:var(--muted);
+  }
+
+  /* Chips */
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip {
+    font-size:12px; padding:7px 14px;
+    border:1px solid var(--border2); border-radius:100px;
+    cursor:pointer; transition:all 0.15s; color:var(--ink2);
+    background:var(--surface); user-select:none;
+  }
+  .chip:hover { border-color:var(--accent); color:var(--accent); }
+  .chip.on { background:var(--accent); border-color:var(--accent); color:#fff; }
+
+  /* CTA */
+  .btn-calc {
+    width:100%; padding:15px 24px; background:var(--ink); color:#fff;
+    border:none; border-radius:var(--radius); font-family:'Geist',sans-serif;
+    font-size:15px; font-weight:500; cursor:pointer;
+    transition:background 0.15s, transform 0.1s; margin-top:8px;
+  }
+  .btn-calc:hover { background:#2d2a26; }
+  .btn-calc:active { transform:scale(0.99); }
+
+  /* Result */
+  #result {
+    display:none; margin-top:44px;
+    border-top:1px solid var(--border2); padding-top:36px;
+    animation: fadeUp 0.4s ease both;
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+  .result-title { font-family:'Instrument Serif',serif; font-size:22px; font-weight:400; color:var(--ink); margin-bottom:24px; }
+
+  /* Rates */
+  .rates {
+    display:grid; grid-template-columns:1fr 1fr 1fr;
+    gap:1px; background:var(--border2);
+    border:1px solid var(--border2); border-radius:var(--radius-lg);
+    overflow:hidden; margin-bottom:20px;
+  }
+  .rate-cell { background:var(--surface); padding:20px 16px; text-align:center; }
+  .rate-cell.mid { background:var(--ink); }
+  .rate-tier { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+  .rate-cell.mid .rate-tier { color:rgba(255,255,255,0.5); }
+  .rate-usd { font-family:'Instrument Serif',serif; font-size:24px; font-weight:400; color:var(--ink); line-height:1; margin-bottom:4px; }
+  .rate-cell.mid .rate-usd { color:#fff; font-size:28px; }
+  .rate-inr { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); margin-top:4px; }
+  .rate-cell.mid .rate-inr { color:rgba(255,255,255,0.5); }
+  .sweet-label { font-size:10px; letter-spacing:1px; text-transform:uppercase; color:var(--gold); margin-top:6px; font-family:'DM Mono',monospace; }
+
+  /* Monthly */
+  .monthly {
+    display:flex; justify-content:space-between; align-items:center;
+    background:#f0ede6; border:1px solid var(--border2);
+    border-radius:var(--radius); padding:14px 20px; margin-bottom:24px; flex-wrap:wrap; gap:8px;
+  }
+  .monthly-label { font-size:12px; color:var(--ink2); }
+  .monthly-amount { font-family:'Instrument Serif',serif; font-size:20px; color:var(--green); }
+
+  /* Score */
+  .score-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .score-row-label { font-size:12px; color:var(--ink2); font-weight:500; }
+  .score-num { font-family:'DM Mono',monospace; font-size:13px; color:var(--accent); }
+  .score-track { width:100%; height:3px; background:var(--border); border-radius:100px; overflow:hidden; margin-bottom:28px; }
+  .score-bar { height:100%; background:var(--accent); border-radius:100px; width:0%; transition:width 0.8s cubic-bezier(0.25,1,0.5,1); }
+
+  /* Insights */
+  .insights-title { font-family:'Instrument Serif',serif; font-size:18px; font-weight:400; margin-bottom:14px; }
+  .insight { display:flex; gap:14px; padding:12px 0; border-bottom:1px solid var(--border); font-size:13px; color:var(--ink2); line-height:1.6; align-items:flex-start; }
+  .insight:last-child { border-bottom:none; }
+  .insight-icon { font-size:16px; margin-top:1px; flex-shrink:0; width:24px; }
+  .insight strong { color:var(--ink); font-weight:500; }
+
+  /* Actions */
+  .actions { margin-top:28px; display:flex; gap:10px; flex-wrap:wrap; }
+  .btn-action {
+    flex:1; min-width:130px; padding:12px 16px;
+    background:transparent; border:1px solid var(--border2);
+    border-radius:var(--radius); font-family:'Geist',sans-serif;
+    font-size:13px; color:var(--ink2); cursor:pointer; transition:all 0.15s; text-align:center;
+  }
+  .btn-action:hover { border-color:var(--ink); color:var(--ink); }
+  .btn-action.primary { background:var(--ink); border-color:var(--ink); color:#fff; }
+  .btn-action.primary:hover { background:#2d2a26; }
+  .copy-msg { display:none; font-family:'DM Mono',monospace; font-size:11px; color:var(--green); text-align:center; margin-top:10px; }
+
+  /* Footer */
+  .footer { margin-top:72px; padding-top:22px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+  .footer-left { font-size:12px; color:var(--muted); }
+  .footer-left strong { color:var(--ink2); font-weight:500; }
+  .footer-links { display:flex; gap:16px; }
+  .footer-links a { font-size:12px; color:var(--muted); text-decoration:none; transition:color 0.15s; }
+  .footer-links a:hover { color:var(--accent); }
+
+  /* Download overlay */
+  #dl-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; align-items:center; justify-content:center; }
+  #dl-overlay.show { display:flex; }
+  .dl-box { background:#fff; border-radius:12px; padding:32px; max-width:360px; width:90%; text-align:center; }
+  .dl-box h3 { font-family:'Instrument Serif',serif; font-size:22px; margin-bottom:8px; }
+  .dl-box p { font-size:13px; color:var(--muted); margin-bottom:20px; }
+  .dl-btns { display:flex; gap:10px; }
+  .dl-btn { flex:1; padding:10px; border-radius:var(--radius); font-family:'Geist',sans-serif; font-size:13px; cursor:pointer; border:1px solid var(--border2); color:var(--ink2); background:transparent; }
+  .dl-btn.primary { background:var(--ink); border-color:var(--ink); color:#fff; }
+
+  @media(max-width:480px){ .rates{grid-template-columns:1fr} .rate-cell.mid{order:-1} }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="header">
+    <div class="tool-badge"><span class="tool-badge-dot"></span>Free Tool · No Signup</div>
+    <div class="eyebrow">Tool #01 by Harry P.</div>
+    <h1>Know Your Worth.<br><em>Charge accordingly.</em></h1>
+    <div class="tagline">
+      <span>For Indian freelancers</span><span class="dot">·</span>
+      <span>100% free</span><span class="dot">·</span><span>Takes 30 seconds</span>
+    </div>
+    <div class="rate-live">
+      <span class="rate-live-dot"></span>
+      <span id="liveRateText">Fetching live USD/INR rate...</span>
+    </div>
+  </header>
+
+  <div class="section">
+    <div class="section-label">Your Profile</div>
+    <div class="form-grid">
+
+      <div class="field">
+        <label>Primary Skill</label>
+        <select id="skill">
+          <option value="">Select skill...</option>
+          <optgroup label="🖥 Development">
+            <option value="react">React / Frontend</option>
+            <option value="fullstack">Full Stack</option>
+            <option value="backend">Backend / APIs</option>
+            <option value="mobile">Mobile (React Native / Flutter)</option>
+            <option value="wordpress">WordPress / Webflow</option>
+            <option value="shopify">Shopify Development</option>
+            <option value="telegram">Telegram Bots</option>
+            <option value="automation">Automation / Scripts</option>
+            <option value="scraping">Web Scraping</option>
+            <option value="chrome">Chrome Extensions</option>
+            <option value="devops">DevOps / Cloud (AWS/GCP)</option>
+          </optgroup>
+          <optgroup label="🤖 AI & Data">
+            <option value="ai">AI / LLM Integration</option>
+            <option value="chatbot">Chatbot Development</option>
+            <option value="data">Data Analysis / Visualization</option>
+            <option value="ml">ML / Deep Learning</option>
+          </optgroup>
+          <optgroup label="🎨 Design">
+            <option value="uiux">UI/UX Design (Figma)</option>
+            <option value="graphic">Graphic Design</option>
+            <option value="video">Video Editing / Reels</option>
+            <option value="motion">Motion Graphics / After Effects</option>
+            <option value="3d">3D Design / Blender</option>
+          </optgroup>
+          <optgroup label="📢 Marketing & Content">
+            <option value="content">Content Writing / Copywriting</option>
+            <option value="seo">SEO</option>
+            <option value="social">Social Media Management</option>
+            <option value="ads">Paid Ads (Meta / Google)</option>
+            <option value="email">Email Marketing</option>
+          </optgroup>
+          <optgroup label="📊 Business">
+            <option value="va">Virtual Assistant</option>
+            <option value="excel">Excel / Google Sheets Expert</option>
+            <option value="bizanalyst">Business Analyst</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Client Location</label>
+        <select id="clientLoc">
+          <option value="">Select location...</option>
+          <option value="india">India 🇮🇳</option>
+          <option value="latam">Latin America / SE Asia</option>
+          <option value="middleeast">Middle East / Europe</option>
+          <option value="uk">United Kingdom 🇬🇧</option>
+          <option value="us">United States / Canada 🇺🇸</option>
+          <option value="australia">Australia / NZ 🇦🇺</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Platform</label>
+        <select id="platform">
+          <option value="fiverr">Fiverr</option>
+          <option value="upwork">Upwork</option>
+          <option value="toptal">Toptal / Arc.dev</option>
+          <option value="direct">Direct / WhatsApp</option>
+          <option value="linkedin">LinkedIn</option>
+          <option value="freelancer">Freelancer.com</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Work Type</label>
+        <select id="workType">
+          <option value="hourly">Hourly Rate</option>
+          <option value="project">Per Project</option>
+          <option value="monthly">Monthly Retainer</option>
+        </select>
+      </div>
+
+      <div class="field full">
+        <div class="range-wrap">
+          <div class="range-top">
+            <label>Years of Experience</label>
+            <span class="range-val" id="expVal">Fresher</span>
+          </div>
+          <input type="range" id="experience" min="0" max="10" value="0" step="0.5"/>
+          <div class="range-ends"><span>0 — Fresher</span><span>10+ years</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Profile Boosters</div>
+    <div class="chips">
+      <span class="chip" onclick="toggleBoost(this,'portfolio')">📁 Portfolio</span>
+      <span class="chip" onclick="toggleBoost(this,'reviews')">⭐ 5★ Reviews</span>
+      <span class="chip" onclick="toggleBoost(this,'english')">🗣 Good English</span>
+      <span class="chip" onclick="toggleBoost(this,'ai')">🤖 Uses AI Tools</span>
+      <span class="chip" onclick="toggleBoost(this,'niche')">🎯 Niche Specialist</span>
+      <span class="chip" onclick="toggleBoost(this,'linkedin2')">💼 Active LinkedIn</span>
+      <span class="chip" onclick="toggleBoost(this,'github')">💻 GitHub Profile</span>
+      <span class="chip" onclick="toggleBoost(this,'cert')">📜 Certifications</span>
+    </div>
+  </div>
+
+  <button class="btn-calc" onclick="calculate()">Calculate My Rate →</button>
+
+  <div id="result">
+    <p class="result-title">Your market rate breakdown</p>
+
+    <div class="rates">
+      <div class="rate-cell">
+        <div class="rate-tier">Minimum</div>
+        <div class="rate-usd" id="rMin">$0</div>
+        <div class="rate-inr" id="rMinINR">₹0</div>
+      </div>
+      <div class="rate-cell mid">
+        <div class="rate-tier">Sweet Spot</div>
+        <div class="rate-usd" id="rMid">$0</div>
+        <div class="rate-inr" id="rMidINR">₹0</div>
+        <div class="sweet-label">Charge this ✦</div>
+      </div>
+      <div class="rate-cell">
+        <div class="rate-tier">Premium</div>
+        <div class="rate-usd" id="rMax">$0</div>
+        <div class="rate-inr" id="rMaxINR">₹0</div>
+      </div>
+    </div>
+
+    <div class="monthly">
+      <div class="monthly-label">Est. monthly income (Sweet Spot · 20 hrs/week)</div>
+      <div class="monthly-amount" id="monthlyAmt">₹0/mo</div>
+    </div>
+
+    <div class="score-row">
+      <span class="score-row-label">Market Positioning Score</span>
+      <span class="score-num" id="scoreNum">0 / 100</span>
+    </div>
+    <div class="score-track"><div class="score-bar" id="scoreBar"></div></div>
+
+    <div class="insights-title">What you should do next</div>
+    <div id="insights"></div>
+
+    <div class="actions">
+      <button class="btn-action primary" onclick="calculate()">🔄 Recalculate</button>
+      <button class="btn-action" onclick="downloadResult()">⬇ Download Result</button>
+      <button class="btn-action" onclick="shareTool()">📤 Share Tool</button>
+    </div>
+    <div class="copy-msg" id="copyMsg">✓ Link copied — share on LinkedIn / WhatsApp</div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-left">
+      <strong>Free Tools for Indian Freelancers</strong> · by Harry P.<br>
+      New tool every week 🛠
+    </div>
+    <div class="footer-links">
+      <a href="https://www.linkedin.com/in/harry-p-7735a0246" target="_blank">LinkedIn ↗</a>
+      <a href="https://www.fiverr.com/pe/0bjpNkq" target="_blank">Fiverr ↗</a>
+    </div>
+  </footer>
+</div>
+
+<!-- Download overlay -->
+<div id="dl-overlay">
+  <div class="dl-box">
+    <h3>Download Result</h3>
+    <p>Save your rate breakdown as an image to share on LinkedIn or WhatsApp.</p>
+    <div class="dl-btns">
+      <button class="dl-btn" onclick="closeDL()">Cancel</button>
+      <button class="dl-btn primary" onclick="doDownload()">📸 Save as Image</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Live USD/INR
+  let USD_INR = 83;
+  async function fetchRate() {
+    try {
+      const r = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+      const d = await r.json();
+      if (d.rates && d.rates.INR) {
+        USD_INR = d.rates.INR;
+        document.getElementById('liveRateText').textContent =
+          'Live Rate: 1 USD = ₹' + USD_INR.toFixed(2) + ' · Updated just now';
+      }
+    } catch(e) {
+      document.getElementById('liveRateText').textContent = '1 USD = ₹83 (default)';
+    }
+  }
+  fetchRate();
+
+  // Slider
+  const slider = document.getElementById('experience');
+  const expValEl = document.getElementById('expVal');
+  function updateSlider() {
+    const v = parseFloat(slider.value);
+    expValEl.textContent = v === 0 ? 'Fresher' : v + ' yrs';
+    const pct = (v / 10) * 100;
+    slider.style.background =
+      'linear-gradient(to right, #c84b2f ' + pct + '%, #d0ccc2 ' + pct + '%)';
+  }
+  slider.addEventListener('input', updateSlider);
+  updateSlider();
+
+  // Base rates
+  const BASE = {
+    react:{min:10,mid:20,max:45}, fullstack:{min:12,mid:25,max:55},
+    backend:{min:10,mid:22,max:50}, mobile:{min:12,mid:28,max:60},
+    wordpress:{min:6,mid:14,max:30}, shopify:{min:8,mid:18,max:40},
+    telegram:{min:8,mid:18,max:40}, automation:{min:7,mid:16,max:35},
+    scraping:{min:7,mid:15,max:32}, chrome:{min:8,mid:18,max:38},
+    devops:{min:14,mid:28,max:65}, ai:{min:15,mid:30,max:70},
+    chatbot:{min:10,mid:22,max:50}, data:{min:10,mid:20,max:45},
+    ml:{min:18,mid:35,max:80}, uiux:{min:10,mid:22,max:55},
+    graphic:{min:5,mid:12,max:28}, video:{min:6,mid:13,max:30},
+    motion:{min:8,mid:18,max:40}, '3d':{min:10,mid:22,max:50},
+    content:{min:5,mid:10,max:22}, seo:{min:6,mid:14,max:32},
+    social:{min:5,mid:12,max:28}, ads:{min:8,mid:18,max:40},
+    email:{min:6,mid:14,max:30}, va:{min:4,mid:8,max:18},
+    excel:{min:6,mid:13,max:28}, bizanalyst:{min:10,mid:22,max:48},
+  };
+
+  const LOC  = {india:0.60,latam:0.75,middleeast:0.90,uk:1.10,us:1.20,australia:1.10};
+  const PLAT = {fiverr:0.85,upwork:0.90,toptal:1.30,direct:1.15,linkedin:1.10,freelancer:0.80};
+
+  let boosts = new Set();
+  function toggleBoost(el, key) {
+    el.classList.toggle('on');
+    boosts.has(key) ? boosts.delete(key) : boosts.add(key);
+  }
+
+  function toINR(usd) { return Math.round(usd * USD_INR); }
+  function fmtINR(n) {
+    if (n >= 100000) return '₹' + (n/100000).toFixed(1) + 'L';
+    if (n >= 1000)   return '₹' + (n/1000).toFixed(1) + 'K';
+    return '₹' + n;
+  }
+
+  function calculate() {
+    const skill = document.getElementById('skill').value;
+    const loc   = document.getElementById('clientLoc').value;
+    const exp   = parseFloat(slider.value);
+    const wtype = document.getElementById('workType').value;
+    const plat  = document.getElementById('platform').value;
+
+    if (!skill || !loc) { alert('Please select your skill and client location.'); return; }
+
+    const b = BASE[skill];
+    const expM   = 1 + Math.log1p(exp) * 0.28;
+    const boostM = 1 + boosts.size * 0.06;
+    const locM   = LOC[loc];
+    const platM  = PLAT[plat];
+
+    let mn = b.min * expM * locM * platM * boostM;
+    let md = b.mid * expM * locM * platM * boostM;
+    let mx = b.max * expM * locM * platM * boostM;
+
+    let label = '/hr';
+    if (wtype === 'project')  { mn*=20; md*=25; mx*=35; label='/project'; }
+    if (wtype === 'monthly')  { mn*=60; md*=80; mx*=120; label='/mo'; }
+
+    mn = Math.round(mn); md = Math.round(md); mx = Math.round(mx);
+
+    const moUSD = wtype==='monthly' ? md : wtype==='project' ? md*1.5 : md*20*4;
+    const score = Math.min(100, Math.round(
+      (exp/10*35) + (boosts.size/8*35) + (locM*20) + (platM*10)
+    ));
+
+    document.getElementById('rMin').textContent    = '$'+mn+label;
+    document.getElementById('rMid').textContent    = '$'+md+label;
+    document.getElementById('rMax').textContent    = '$'+mx+label;
+    document.getElementById('rMinINR').textContent = fmtINR(toINR(mn))+label;
+    document.getElementById('rMidINR').textContent = fmtINR(toINR(md))+label;
+    document.getElementById('rMaxINR').textContent = fmtINR(toINR(mx))+label;
+    document.getElementById('monthlyAmt').textContent = fmtINR(toINR(moUSD))+'/mo';
+    document.getElementById('scoreNum').textContent   = score+' / 100';
+    setTimeout(() => document.getElementById('scoreBar').style.width = score+'%', 80);
+
+    document.getElementById('insights').innerHTML =
+      buildInsights(loc, exp, boosts.size, score, md, plat);
+
+    const r = document.getElementById('result');
+    r.style.display = 'block';
+    setTimeout(() => r.scrollIntoView({behavior:'smooth', block:'start'}), 80);
+  }
+
+  function buildInsights(loc, exp, bc, score, mid, plat) {
+    const list = [];
+    if (score < 50)
+      list.push({i:'⚠️', t:'Most beginners undercharge by <strong>40–60%</strong>. Never go below your minimum — clients associate low price with low quality.'});
+    if (loc === 'india')
+      list.push({i:'🌍', t:'<strong>Indian clients pay 40% less</strong> than US/UK. Even 1 US client can 3× your income. Start LinkedIn outreach today.'});
+    else if (loc === 'us')
+      list.push({i:'🇺🇸', t:'<strong>US clients pay premium.</strong> Communicate in polished English, show USD-priced case studies, highlight timezone overlap.'});
+    if (plat === 'fiverr')
+      list.push({i:'🛒', t:'<strong>Fiverr tip:</strong> Start at mid-range, not minimum. Too low looks suspicious. Create 3 clear packages: Basic / Standard / Premium.'});
+    else if (plat === 'direct')
+      list.push({i:'💎', t:'<strong>Direct clients pay 20–30% more</strong> with zero fees. Always send a short written proposal — even via email.'});
+    else if (plat === 'toptal')
+      list.push({i:'🏅', t:'<strong>Toptal/Arc.dev is elite tier.</strong> Hard to get in but clients are serious and pay top-of-market consistently.'});
+    if (!boosts.has('ai'))
+      list.push({i:'🤖', t:'Adding <strong>AI tools</strong> (ChatGPT, Claude, Copilot) can 2× your output speed — justifying 25% higher rates immediately.'});
+    if (exp < 1)
+      list.push({i:'🚀', t:'<strong>First 90 days:</strong> Take 2–3 projects at minimum rate to collect reviews. After 5★ reviews, raise your rate by 30% immediately.'});
+    else if (exp >= 3)
+      list.push({i:'📈', t:'With '+exp+' yrs experience, target <strong>monthly retainer clients.</strong> Retainers = stable income + higher effective hourly rate.'});
+    if (score >= 70)
+      list.push({i:'🏆', t:'Strong positioning. <strong>Stop competing on price.</strong> Compete on speed, results, specialization. Raise rates 20% every 6 months.'});
+    else
+      list.push({i:'📌', t:'<strong>Top 3 actions now:</strong> (1) Add 2 portfolio projects, (2) Get 1 testimonial, (3) Write a niche-specific bio. This can boost your rate by '+fmtINR(Math.round(toINR(mid*0.3)/100)*100)+'/hr.'});
+    return list.map(x=>`<div class="insight"><span class="insight-icon">${x.i}</span><span>${x.t}</span></div>`).join('');
+  }
+
+  function downloadResult() { document.getElementById('dl-overlay').classList.add('show'); }
+  function closeDL() { document.getElementById('dl-overlay').classList.remove('show'); }
+  function doDownload() {
+    closeDL();
+    html2canvas(document.getElementById('result'), {
+      backgroundColor:'#f7f5f0', scale:2, useCORS:true, logging:false
+    }).then(canvas => {
+      const a = document.createElement('a');
+      a.download = 'my-freelance-rate.png';
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+    });
+  }
+
+  function shareTool() {
+    navigator.clipboard.writeText(window.location.href).then(()=>{
+      const m = document.getElementById('copyMsg');
+      m.style.display='block';
+      setTimeout(()=>m.style.display='none', 3000);
+    }).catch(()=>alert('Copy: '+window.location.href));
+  }
+
+  document.getElementById('dl-overlay').addEventListener('click', function(e){
+    if(e.target===this) closeDL();
+  });
+</script>
+</body>
+</html>
